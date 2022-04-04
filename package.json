@@ -1,0 +1,45 @@
+{
+  "name": "include-webpack-plugin",
+  "version": "5.0.0",
+  "description": "include file for webpack",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "NODE_ENV=production babel src -d dist",
+    "test:build": "rm -rf test/example/dist && webpack --config test/example/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wenjunxiao/include-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "manifest",
+    "loader",
+    "json"
+  ],
+  "author": "Wenjun Xiao",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wenjunxiao/include-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/wenjunxiao/include-webpack-plugin#readme",
+  "engines": {
+    "node": ">= 12"
+  },
+  "dependencies": {
+    "comment-json": "^4.2.2"
+  },
+  "peerDependencies": {
+    "webpack": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "babel-loader": "^8.2.4",
+    "css-loader": "^6.7.1",
+    "html-webpack-plugin": "^5.5.0",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^4.9.2"
+  }
+}
