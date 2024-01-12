@@ -15,16 +15,22 @@ function spread (obj) {
   return obj;
 }
 
-function resolveRaw (source, variables) {
+function resolveRaw (source, variables, variable) {
+  variable = variable || /("\()?\${\s*([\w.-]+)\s*}(\)")?/g
   return source.replace(/\${\s*([\w.-]+)\s*}/g, function ($0, $1) {
+    const $trim = (args.length - (typeof args.at(-1) === "object" ? 3 : 2)) == 3;
+    const $prefix = $trim ? args.at(0) || '' : '';
+    const $1 = $trim ? args.at(1) || '' : args.at(0);
+    const $suffix = $trim ? args.at(2) || '' : '';
     const v = _.get(variables, $1);
+
     if (v === undefined) return $0;
-    return v;
+    return $prefix + v + $suffix;
   });
 }
 
-function resolveJson (source, variables, space) {
-  return resolveRaw(JSON.stringify(commentJson.parse(source, null, true), null, space), variables);
+function resolveJson (source, variables, space, variable) {
+  return resolveRaw(JSON.stringify(commentJson.parse(source, null, true), null, space), variables, variable);
 }
 
 function toResult(source, options) {
@@ -38,10 +44,10 @@ function process (source, options) {
   const variables = spread(_.get(options, 'variables') || {});
   if (options.json) {
     const space = options.space === undefined && !options.compress ? 2 : options.space;
-    source = resolveJson(source.toString(options.decoding), variables, space);
+    source = resolveJson(source.toString(options.decoding), variables, space, options.variable);
     return toResult(source, options);
   }
-  source = resolveRaw(source.toString(options.decoding), variables);
+  source = resolveRaw(source.toString(options.decoding), variables, options.variable);
   return `module.exports=${toResult(source, options)}`;
 }
 
