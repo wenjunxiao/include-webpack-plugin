@@ -17,11 +17,11 @@ function spread (obj) {
 
 function resolveRaw (source, variables, variable) {
   variable = variable || /("\()?\${\s*([\w.-]+)\s*}(\)")?/g
-  return source.replace(/\${\s*([\w.-]+)\s*}/g, function ($0, $1) {
+  return source.replace(/\${\s*([\w.-]+)\s*}/g, function ($0, ...args) {
     const $trim = (args.length - (typeof args.at(-1) === "object" ? 3 : 2)) == 3;
-    const $prefix = $trim ? args.at(0) || '' : '';
+    const $prefix = $trim ? (args.at(0) && args.at(2) ? '' : args.at(0) || '') : '';
     const $1 = $trim ? args.at(1) || '' : args.at(0);
-    const $suffix = $trim ? args.at(2) || '' : '';
+    const $suffix = $trim ? (args.at(0) && args.at(2) ? '' : args.at(2) || '') : '';
     const v = _.get(variables, $1);
 
     if (v === undefined) return $0;
