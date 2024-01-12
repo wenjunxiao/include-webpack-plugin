@@ -25,7 +25,7 @@ class IncludeWebpackPlugin {
     this.variable = this.options.variable;
     delete this.options.variable;
     if (this.variable === true) {
-      this.variable = /\${\s*([\w.-]+?)(\.\w+)?\s*}/g;
+      this.variable = /("\()?\${\s*([\w.-]+?)(\.\w+)?\s*}(\)")?/g;
     }
   }
 
@@ -62,15 +62,19 @@ class IncludeWebpackPlugin {
               }
               if (this.variable) {
                 const variables = this.variables || {};
-                source = source.replace(this.variable, function ($0, $1, ext) {
-                  ext = ext || '';
-                  let v = variables[$1 + ext];
-                  if (v !== undefined) return v;
-                  let entry = compilation.entrypoints.get($1);
+                source = source.replace(this.variable, function ($0, ...args) {
+                  const $trim = (args.length - (typeof args.at(-1) === "object" ? 3 : 2)) == 4;
+                  const $prefix = $trim ? (args.at(0) && args.at(3) ? '' : args.at(0) || '') : '';
+                  const $name = $trim ? args.at(1) : args.at(0);
+                  const $ext = $trim ? args.at(2) || '' : '';
+                  const $suffix = $trim ? (args.at(0) && args.at(3) ? '' : args.at(3) || '') : '';
+                  let v = variables[$name + $ext];
+                  if (v !== undefined) return $prefix + v + $suffix;
+                  let entry = compilation.entrypoints.get($name);
                   if (entry && entry.chunks[0]) {
                     for (let file of entry.chunks[0].files) {
-                      if (!ext || path.extname(file) === ext) {
-                        return file;
+                      if (!$ext || path.extname(file) === $ext) {
+                        return $prefix + file + $suffix;
                       }
                     }
                   };
